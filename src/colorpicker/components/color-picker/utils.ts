@@ -29,7 +29,11 @@ const getAlphaGradient = (color: string, colorFormat: ColorFormat): string => {
   return `linear-gradient(to right, ${aplha0}, ${aplha1})`;
 };
 
-const hsvFromColor = (color: string, gamut: ColorGamut) => {
+const getHsvFromColor = (
+  color: string,
+  gamut: ColorGamut,
+  hueFallback?: number
+) => {
   let colorInRgbSafe = color;
   if (gamut === 'p3') {
     const p3 = colorLib.toGamut(colorLib.toFormat(color, gamut));
@@ -38,17 +42,21 @@ const hsvFromColor = (color: string, gamut: ColorGamut) => {
   }
   const hsv = colorLib.toFormat(colorInRgbSafe, 'hsv');
   const hsvChannels = colorLib.getChannels(hsv);
+  if (hueFallback !== undefined && !isHueMeaningful(hsvChannels[0])) {
+    return { h: hueFallback, s: hsvChannels[1], v: hsvChannels[2] };
+  }
   return { h: hsvChannels[0], s: hsvChannels[1], v: hsvChannels[2] };
 };
 
-const colorFromHsv = (
+const getColorFromHsv = (
   h: number,
   s: number,
   v: number,
   colorFormat: ColorFormat,
   gamut: ColorGamut
 ): string => {
-  const hsvColor = colorLib.createColor('hsv', [h, s, v]);
+  const hue = isHueMeaningful(h) ? h : 0;
+  const hsvColor = colorLib.createColor('hsv', [hue, s, v]);
   let color = colorLib.toFormat(hsvColor, 'srgb');
   if (gamut === 'p3') {
     const rgbChannels = colorLib.getChannels(color);
@@ -70,9 +78,10 @@ const getMostSaturatedColorForGivenHue = (
   return colorLib.createColor('p3', rgbChannels);
 };
 
-const getValidatedColor = (
+const getColorWithFallback = (
   value: string,
-  resolvedValue: string | undefined
+  resolvedValue: string | undefined,
+  fallback = 'rgba(255, 0, 0, 1)'
 ): string => {
   if (colorLib.isValidColor(value)) {
     return value;
@@ -80,14 +89,27 @@ const getValidatedColor = (
   if (resolvedValue && colorLib.isValidColor(resolvedValue)) {
     return resolvedValue;
   }
-  return 'rgba(0, 0, 0, 1)';
+  // in case of both value and resolvedValue are invalid
+  return fallback;
 };
 
+const getColorFormatWithFallback = (
+  color: string,
+  fallback: ColorFormat = 'srgb'
+): ColorFormat => {
+  const colorFormat = colorLib.tryGetColorFormat(color);
+  return (colorFormat || fallback) as ColorFormat;
+};
+
+const isHueMeaningful = (hue: number) => !Number.isNaN(hue.valueOf());
+
 export {
-  hsvFromColor,
-  colorFromHsv,
+  getHsvFromColor,
+  getColorFromHsv,
   getMostSaturatedColorForGivenHue,
   getGamaGradient,
   getAlphaGradient,
-  getValidatedColor,
+  getColorWithFallback,
+  getColorFormatWithFallback,
+  isHueMeaningful,
 };

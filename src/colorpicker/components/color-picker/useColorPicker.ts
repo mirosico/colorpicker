@@ -1,47 +1,35 @@
-import { ColorFormat } from '../../types';
+import React from 'react';
 import { colorLib } from '../../lib';
 import {
-  colorFromHsv,
+  getColorFromHsv,
   getAlphaGradient,
+  getColorFormatWithFallback,
   getGamaGradient,
   getMostSaturatedColorForGivenHue,
-  getValidatedColor,
-  hsvFromColor,
+  getColorWithFallback,
+  getHsvFromColor,
+  isHueMeaningful,
 } from './utils.ts';
-import { ColorFormatStrategy, Strategies } from './color-format-strategies/';
-import { ColorFormatSelectorProps } from '../color-format-selector/color-format-selector.tsx';
-import { ColorPickerPlaneProps } from '../color-picker-plane/color-picker-plane.tsx';
-import { HueSliderProps } from '../hue-slider/hue-slider.tsx';
-import { AlphaSliderProps } from '../alpha-slider/alpha-slider.tsx';
-import { ChannelInputsProps } from '../channel-inputs/channel-inputs.tsx';
-import { ColorPreviewProps } from '../color-preview/color-preview.tsx';
-import React from 'react';
+import type {
+  ColorFormatSelectorProps,
+  ColorPickerPlaneProps,
+  HueSliderProps,
+  AlphaSliderProps,
+  ChannelInputsProps,
+  ColorPreviewProps,
+} from '../';
+import {
+  definedColorFormats,
+  getColorFormatStrategy,
+} from './color-format-strategies/';
 
-const definedColorFormats: ColorFormat[] = Object.keys(Strategies).filter(
-  (key) => key !== 'default'
-) as ColorFormat[];
-
-const isDefinedColorFormat = (
-  colorFormat: string | null
-): colorFormat is ColorFormat => {
-  return (
-    !!colorFormat && definedColorFormats.includes(colorFormat as ColorFormat)
-  );
-};
-
-const getColorFormatWithFallback = (
-    color: string,
-): ColorFormat => {
-    const colorFormat = colorLib.tryGetColorFormat(color);
-    return (colorFormat || 'srgb') as ColorFormat;
-}
-
-const getColorStrategy = (color: string): ColorFormatStrategy => {
-  const colorFormat = colorLib.tryGetColorFormat(color);
-  return isDefinedColorFormat(colorFormat)
-    ? Strategies[colorFormat]
-    : Strategies.default;
-};
+const getFormatSelectorOptions = (color: string, colorFormat: string) =>
+  definedColorFormats
+    .filter((format) => format !== colorFormat)
+    .map((format) => ({
+      value: format,
+      label: colorLib.toFormat(color, format),
+    }));
 
 type UseColorPicker = (
   value: string,
@@ -61,17 +49,22 @@ export const useColorPicker: UseColorPicker = (
   externalOnChange,
   resolvedValue
 ) => {
-  const color = getValidatedColor(value, resolvedValue);
-  const strategy = getColorStrategy(color);
-  const { colorFormat: strategyDefinedColorFormat, colorGamut, getInputs } = strategy;
-  const [hsv, setHSV] = React.useState(hsvFromColor(color, colorGamut));
+  const color = getColorWithFallback(value, resolvedValue);
+  const strategy = getColorFormatStrategy(color);
+  const {
+    colorFormat: strategyDefinedColorFormat,
+    colorGamut,
+    getInputs,
+  } = strategy;
+  const [hsv, setHSV] = React.useState(getHsvFromColor(color, colorGamut, 0));
 
-  const colorFormat = strategyDefinedColorFormat ?? getColorFormatWithFallback(color);
+  const colorFormat =
+    strategyDefinedColorFormat ?? getColorFormatWithFallback(color);
 
   const onChange = (newColor: string) => {
     externalOnChange(newColor);
-    const newHsv = hsvFromColor(newColor, colorGamut);
-    if (!Number.isNaN(newHsv.h.valueOf())) {
+    const newHsv = getHsvFromColor(newColor, colorGamut);
+    if (isHueMeaningful(newHsv.h)) {
       setHSV(newHsv);
     }
   };
@@ -84,7 +77,7 @@ export const useColorPicker: UseColorPicker = (
         brightness: hsv.v,
       },
       onChange: ({ saturation: newSaturation, brightness: newBrightness }) => {
-        const newColor = colorFromHsv(
+        const newColor = getColorFromHsv(
           hsv.h,
           newSaturation,
           newBrightness,
@@ -98,7 +91,7 @@ export const useColorPicker: UseColorPicker = (
       background: getGamaGradient(colorGamut),
       hue: hsv.h,
       onChange: (newHue) => {
-        const newColor = colorFromHsv(
+        const newColor = getColorFromHsv(
           newHue,
           hsv.s,
           hsv.v,
@@ -121,12 +114,7 @@ export const useColorPicker: UseColorPicker = (
     },
     colorFormatSelectorProps: {
       selectedFormat: colorFormat,
-      formats: definedColorFormats
-        .filter((format) => format !== colorFormat)
-        .map((format) => ({
-          value: format,
-          label: colorLib.toFormat(color, format),
-        })),
+      formats: getFormatSelectorOptions(color, colorFormat),
       onChange: (colorFormat) =>
         onChange(colorLib.toFormat(color, colorFormat)),
     },

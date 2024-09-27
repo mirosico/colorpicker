@@ -1,6 +1,6 @@
 import { ColorFormatStrategy } from './index.ts';
 import { colorLib } from '../../../lib';
-import { createAlphaInput } from './createAlphaInput.ts';
+import { createGenericAlphaInput } from './createGenericAlphaInput.ts';
 import { ChannelInput } from '../../channel-inputs/channel-inputs.tsx';
 
 export class HSLColorFormat implements ColorFormatStrategy {
@@ -8,7 +8,11 @@ export class HSLColorFormat implements ColorFormatStrategy {
   colorGamut: ColorFormatStrategy['colorGamut'] = 'srgb';
 
   getInputs = (color: string, onChange: (color: string) => void) => {
-    const alphaInput = createAlphaInput(color, onChange, this.colorFormat!);
+    const alphaInput = createGenericAlphaInput(
+      color,
+      onChange,
+      this.colorFormat!
+    );
     return colorLib
       .getChannels(color)
       .map((channel, index) => {

@@ -2,7 +2,7 @@ import { colorLib } from '../../../lib';
 import { ChannelInput } from '../../channel-inputs/channel-inputs.tsx';
 import { ColorFormat } from '../../../types';
 
-export const createAlphaInput = (
+export const createGenericAlphaInput = (
   color: string,
   onChange: (color: string) => void,
   colorFormat: ColorFormat

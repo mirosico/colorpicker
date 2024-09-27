@@ -14,7 +14,7 @@ export const HueSlider: React.FC<HueSliderProps> = ({
 }) => {
   return (
     <SliderWithBackground
-      min={1}
+      min={0}
       max={359}
       background={background}
       value={hue}

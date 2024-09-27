@@ -1,6 +1,6 @@
 import React from 'react';
 import { SliderWithBackground } from '../';
-import {OPACITY_IMAGE} from "../../../assets/opacityImage.ts";
+import { OPACITY_IMAGE } from '../../../assets/opacityImage.ts';
 
 export interface AlphaSliderProps {
   background: string;
@@ -16,7 +16,7 @@ export const AlphaSlider: React.FC<AlphaSliderProps> = ({
   return (
     <div
       style={{
-        background: `url(${OPACITY_IMAGE}) left center`
+        background: `url(${OPACITY_IMAGE}) left center`,
       }}
     >
       <SliderWithBackground
