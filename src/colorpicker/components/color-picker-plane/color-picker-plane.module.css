@@ -1,0 +1,30 @@
+.colorPickerPlane {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  cursor: crosshair;
+}
+
+.whiteGradient {
+  width: 100%;
+  height: 100%;
+  background: -webkit-linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+  background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+}
+.blackGradient {
+  width: 100%;
+  height: 100%;
+  background: -webkit-linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+  background: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+}
+
+.pointer {
+  position: absolute;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid #ffcf4e;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  cursor: move;
+}

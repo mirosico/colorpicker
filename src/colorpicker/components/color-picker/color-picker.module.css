@@ -1,0 +1,35 @@
+.colorPicker {
+  width: 500px;
+  height: auto;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #27261d;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.slidersPreviewContainer {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 15px 0;
+  gap: 20px;
+  width: 100%;
+}
+
+.slidersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputsWithSelectors {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  width: 100%;
+  flex-direction: row;
+}

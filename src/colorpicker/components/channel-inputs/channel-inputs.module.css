@@ -1,0 +1,14 @@
+.inputsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.inputWithLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  align-items: flex-start;
+  color: white;
+}

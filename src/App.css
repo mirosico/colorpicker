@@ -1,0 +1,11 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.picker {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+}
