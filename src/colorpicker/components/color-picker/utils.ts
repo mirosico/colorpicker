@@ -2,8 +2,7 @@ import { colorLib } from '../../lib';
 import { ColorChannels, ColorFormat, ColorGamut } from '../../types';
 
 const getGamaGradient = (gamut: ColorGamut): string => {
-  let stops: Array<ColorChannels> = [];
-  stops = [
+  const stops: Array<ColorChannels> = [
     [1, 0, 0],
     [1, 1, 0],
     [0, 1, 0],
@@ -53,7 +52,7 @@ const colorFromHsv = (
   let color = colorLib.toFormat(hsvColor, 'srgb');
   if (gamut === 'p3') {
     const rgbChannels = colorLib.getChannels(color);
-    color = colorLib.createColor('p3', rgbChannels);
+    color = colorLib.createColor(gamut, rgbChannels);
   }
   return colorLib.toFormat(color, colorFormat);
 };

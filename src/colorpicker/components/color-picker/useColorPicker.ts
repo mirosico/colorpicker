@@ -17,21 +17,28 @@ import { ChannelInputsProps } from '../channel-inputs/channel-inputs.tsx';
 import { ColorPreviewProps } from '../color-preview/color-preview.tsx';
 import React from 'react';
 
-const allowedColorFormats: ColorFormat[] = Object.keys(Strategies).filter(
+const definedColorFormats: ColorFormat[] = Object.keys(Strategies).filter(
   (key) => key !== 'default'
 ) as ColorFormat[];
 
-const isAllowedColorFormat = (
+const isDefinedColorFormat = (
   colorFormat: string | null
 ): colorFormat is ColorFormat => {
   return (
-    !!colorFormat && allowedColorFormats.includes(colorFormat as ColorFormat)
+    !!colorFormat && definedColorFormats.includes(colorFormat as ColorFormat)
   );
 };
 
+const getColorFormatWithFallback = (
+    color: string,
+): ColorFormat => {
+    const colorFormat = colorLib.tryGetColorFormat(color);
+    return (colorFormat || 'srgb') as ColorFormat;
+}
+
 const getColorStrategy = (color: string): ColorFormatStrategy => {
   const colorFormat = colorLib.tryGetColorFormat(color);
-  return isAllowedColorFormat(colorFormat)
+  return isDefinedColorFormat(colorFormat)
     ? Strategies[colorFormat]
     : Strategies.default;
 };
@@ -56,8 +63,10 @@ export const useColorPicker: UseColorPicker = (
 ) => {
   const color = getValidatedColor(value, resolvedValue);
   const strategy = getColorStrategy(color);
-  const { colorFormat, colorGamut, getInputs } = strategy;
+  const { colorFormat: strategyDefinedColorFormat, colorGamut, getInputs } = strategy;
   const [hsv, setHSV] = React.useState(hsvFromColor(color, colorGamut));
+
+  const colorFormat = strategyDefinedColorFormat ?? getColorFormatWithFallback(color);
 
   const onChange = (newColor: string) => {
     externalOnChange(newColor);
@@ -112,7 +121,7 @@ export const useColorPicker: UseColorPicker = (
     },
     colorFormatSelectorProps: {
       selectedFormat: colorFormat,
-      formats: allowedColorFormats
+      formats: definedColorFormats
         .filter((format) => format !== colorFormat)
         .map((format) => ({
           value: format,

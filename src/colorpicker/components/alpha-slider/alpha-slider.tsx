@@ -1,14 +1,12 @@
 import React from 'react';
 import { SliderWithBackground } from '../';
+import {OPACITY_IMAGE} from "../../../assets/opacityImage.ts";
 
 export interface AlphaSliderProps {
   background: string;
   alpha: number;
   onChange: (alpha: number) => void;
 }
-
-const opacityImage =
-  'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZGBgEGHAD97gk2YcNYBhmIQBgWSAP52AwoAQwJvQRg1gACckQoC2gQgAIF8IscwEtKYAAAAASUVORK5CYII=") left center';
 
 export const AlphaSlider: React.FC<AlphaSliderProps> = ({
   background,
@@ -18,7 +16,7 @@ export const AlphaSlider: React.FC<AlphaSliderProps> = ({
   return (
     <div
       style={{
-        background: opacityImage,
+        background: `url(${OPACITY_IMAGE}) left center`
       }}
     >
       <SliderWithBackground

@@ -8,7 +8,7 @@ export class LCHColorFormat implements ColorFormatStrategy {
   colorGamut: ColorFormatStrategy['colorGamut'] = 'p3';
 
   getInputs = (color: string, onChange: (color: string) => void) => {
-    const alphaInput = createAlphaInput(color, onChange, this.colorFormat);
+    const alphaInput = createAlphaInput(color, onChange, this.colorFormat!);
     return colorLib
       .getChannels(color)
       .map((channel, index) => {
@@ -24,7 +24,7 @@ export class LCHColorFormat implements ColorFormatStrategy {
           onChange: (value) => {
             const newChannels = colorLib.getChannels(color);
             newChannels[index] = parseFloat(value);
-            onChange(colorLib.createColor(this.colorFormat, newChannels));
+            onChange(colorLib.createColor(this.colorFormat!, newChannels));
           },
         } as ChannelInput;
       })

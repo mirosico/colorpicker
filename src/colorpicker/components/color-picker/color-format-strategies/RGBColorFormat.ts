@@ -9,7 +9,7 @@ export class RGBColorFormat implements ColorFormatStrategy {
   colorGamut: ColorFormatStrategy['colorGamut'] = 'srgb';
 
   getInputs = (color: string, onChange: (color: string) => void) => {
-    const alphaInput = createAlphaInput(color, onChange, this.colorFormat);
+    const alphaInput = createAlphaInput(color, onChange, this.colorFormat!);
     return colorLib
       .getChannels(color)
       .map((channel, index) => {
@@ -27,7 +27,7 @@ export class RGBColorFormat implements ColorFormatStrategy {
               ? _.clamp(value, 0, 255)
               : 0;
             newChannels[index] = safeValue / 255;
-            onChange(colorLib.createColor(this.colorFormat, newChannels));
+            onChange(colorLib.createColor(this.colorFormat!, newChannels));
           },
         } as ChannelInput;
       })
