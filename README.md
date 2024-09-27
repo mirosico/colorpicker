@@ -7,7 +7,7 @@ This colorpicker supports new CSS Color 4 spaces
 
 To run
 
-```js
+```shell
 npm i
 npm run build
 npm run dev
