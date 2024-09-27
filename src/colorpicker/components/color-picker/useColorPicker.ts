@@ -33,7 +33,7 @@ const getFormatSelectorOptions = (color: string, colorFormat: string) =>
 
 type UseColorPicker = (
   value: string,
-  externalOnChange: (value: string) => void,
+  onChange: (value: string) => void,
   resolvedValue?: string
 ) => {
   colorPlaneProps: ColorPickerPlaneProps;
@@ -46,7 +46,7 @@ type UseColorPicker = (
 
 export const useColorPicker: UseColorPicker = (
   value,
-  externalOnChange,
+  onChange,
   resolvedValue
 ) => {
   const color = getColorWithFallback(value, resolvedValue);
@@ -61,13 +61,12 @@ export const useColorPicker: UseColorPicker = (
   const colorFormat =
     strategyDefinedColorFormat ?? getColorFormatWithFallback(color);
 
-  const onChange = (newColor: string) => {
-    externalOnChange(newColor);
-    const newHsv = getHsvFromColor(newColor, colorGamut);
+  React.useEffect(() => {
+    const newHsv = getHsvFromColor(color, colorGamut);
     if (isHueMeaningful(newHsv.h)) {
       setHSV(newHsv);
     }
-  };
+  }, [color, colorGamut, colorFormat]);
 
   return {
     colorPlaneProps: {
